@@ -12,9 +12,7 @@ const NUMBERS = {
     "nine": "9"
 }
 
-const NUMBERS_MATCH = `one|two|three|four|five|six|seven|eight|nine`
-
-function calculateFileValue(filepath) {
+function calculateFileValueFirstStar(filepath) {
     let inputText = fs.readFileSync(filepath, "utf-8").split('\n')
 
     let total = 0
@@ -23,45 +21,50 @@ function calculateFileValue(filepath) {
         total += calculateLineValue(line)
     }
 
-    console.log("Total:", total)
+    console.log("First star:", total)
+}
+
+function calculateFileValueSecondStar(filepath) {
+    let inputText = fs.readFileSync(filepath, "utf-8").split('\n')
+
+    let total = 0
+
+    for (let line of inputText) {
+        for(let number of Object.keys(NUMBERS)) {
+            line = line.replaceAll(number, NUMBERS[number])
+        }
+        
+        total += calculateLineValue(line)
+    }
+
+    console.log("Second star:", total)
 }
 
 function calculateLineValue(line) {
     let firstVal = getLineValueFirstDigit(line)
-    if (!firstVal) firstVal = getLineValueFirstWord(line)
-
     let lastVal = getLineValueLastDigit(line)
-    if (!lastVal) lastVal = getLineValueLastWord(line)
+
+    // console.log("Line", line, "Value: ", Number(`${firstVal}${lastVal}`))
 
     return Number(`${firstVal}${lastVal}`)
 }
 
 function getLineValueFirstDigit(line) {
-    let match = line.match(/\d/)
-
-    if (!match || !match[0]) return null
-    else return match[0]
+    return getMatch(line, new RegExp(/\d/))
 }
 
 function getLineValueLastDigit(line) {
-    let match = line.match(/(\d)(?!.*\d)/)
-
-    if (!match || !match[0]) return null
-    else return match[0]
+    return getMatch(line, new RegExp(/(\d)(?!.*\d)/))
 }
 
-function getLineValueFirstWord(line) {
-    let match = line.match(new RegExp(`(${NUMBERS_MATCH})`))
+function getMatch(line, regex) {
+    let match = line.match(regex)
 
     if (!match || !match[0]) return null
-    else return NUMBERS[match[0]]
+    else {
+        return match[0]
+    }
 }
 
-function getLineValueLastWord(line) {
-    let match = line.match(new RegExp(`(${NUMBERS_MATCH})(?!.*(${NUMBERS_MATCH}))`))
-
-    if (!match || !match[0]) return null
-    else return NUMBERS[match[0]]
-}
-
-calculateFileValue("./input.txt")
+calculateFileValueFirstStar("./input.txt")
+calculateFileValueSecondStar("./input.txt")
