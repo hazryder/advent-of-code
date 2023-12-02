@@ -20,6 +20,20 @@ function calculateFirstStar() {
     console.log("Star value:", starValue)
 }
 
+function calculateSecondStar() {
+    let inputStrings = loadInputFromFile("./input.txt")
+
+    let games = createGamesFromStrings(inputStrings)
+
+    games = calculateGameMinimumPowers(games)
+
+    let starValue = games.reduce((acc, curr) => {
+        return acc + curr.minPower
+    }, 0)
+
+    console.log("Star value:", starValue)
+}
+
 function loadInputFromFile(filepath) {
     return fs.readFileSync(filepath, "utf-8")
         .split("\n")
@@ -91,4 +105,29 @@ function calculateValidGames(games, inputTokens) {
     return validGames
 }
 
+function calculateGameMinimumPowers(games) {
+    return games.map(e => {
+        let minAmounts = {
+            red: 0,
+            green: 0,
+            blue: 0
+        }
+
+        for (let tokenSet of e.tokenSets) {
+            for (let colour of Object.keys(tokenSet)) {
+                minAmounts[colour] = Math.max(minAmounts[colour], tokenSet[colour] ?? 0)
+            }
+        }
+
+        let minPower = minAmounts.red * minAmounts.green * minAmounts.blue
+
+        return {
+            minPower: minPower,
+            minAmounts: minAmounts,
+            ...e
+        }
+    })
+}
+
 calculateFirstStar()
+calculateSecondStar()
