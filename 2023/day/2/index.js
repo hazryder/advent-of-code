@@ -1,4 +1,4 @@
-import fs from "fs"
+import { loadInputFromFile } from "../../lib/common.js"
 
 function calculateFirstStar() {
     let inputStrings = loadInputFromFile("./input.txt")
@@ -34,14 +34,6 @@ function calculateSecondStar() {
     console.log("Star value:", starValue)
 }
 
-function loadInputFromFile(filepath) {
-    return fs.readFileSync(filepath, "utf-8")
-        .split("\n")
-        .map(e =>
-            e.replace("\r", "")
-        )
-}
-
 function createGamesFromStrings(strings) {
     return strings.map(e => {
         let id = Number(
@@ -71,10 +63,7 @@ function createGamesFromStrings(strings) {
             return tokens
         })
 
-        return {
-            id: id,
-            tokenSets: tokenSets
-        }
+        return { id, tokenSets }
     })
 }
 
@@ -121,11 +110,7 @@ function calculateGameMinimumPowers(games) {
 
         let minPower = minAmounts.red * minAmounts.green * minAmounts.blue
 
-        return {
-            minPower: minPower,
-            minAmounts: minAmounts,
-            ...e
-        }
+        return { minPower, minAmounts, ...e }
     })
 }
 
