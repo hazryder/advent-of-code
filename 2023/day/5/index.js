@@ -7,11 +7,27 @@ function calculateFirstStar() {
 
     let maps = parseMaps(inputStrings.slice(2))
 
-    calculateMapValues(seeds, maps)
+    seeds = calculateMapValues(seeds, maps)
 
     let starValue = Math.min(...seeds.map(e => e.location))
 
     console.log("Star value:", starValue)
+}
+
+function calculateSecondStar() {
+    let startTime = new Date()
+    
+    let inputStrings = loadInputFromFile("./input.txt")
+
+    let seeds = parseSeeds(inputStrings[0])
+
+    let maps = parseMaps(inputStrings.slice(2))
+
+    let starValue = calculateSecondStarValue(seeds, maps)
+
+    let endTime = new Date()
+
+    console.log("Star value:", starValue, endTime - startTime)
 }
 
 function parseSeeds(seedStr) {
@@ -20,6 +36,32 @@ function parseSeeds(seedStr) {
     return matches.map(e => ({
         id: Number(e)
     }))
+}
+
+function calculateSecondStarValue(seeds, maps) {
+    let lowestLocation = Number.MAX_VALUE
+
+    for (let i = 0; i < seeds.length; i+= 2) {
+        console.log("Processing seed", i, "/", seeds.length, "(", seeds[i+1].id, "sub-seeds)")
+
+        let startTime = new Date()
+
+        for (let j = seeds[i].id; j <= (seeds[i].id + seeds[i+1].id); j++) {
+            let seed = calculateMapValues([{id: j}], maps)
+
+            if (seed[0].location <= lowestLocation) {
+                lowestLocation = seed[0].location
+
+                console.log("Got new lowest location", lowestLocation)
+            }
+        }
+
+        let endTime = new Date()
+
+        console.log("Processed in:", endTime - startTime, "ms")
+    }
+
+    return lowestLocation
 }
 
 function parseMaps(mapStrings) {
@@ -87,11 +129,15 @@ function calculateMapEndLine(mapStrings, startLine) {
 }
 
 function calculateMapValues(seeds, maps) {
-    for (let seed of seeds) {
+    let _seeds = [...seeds]
+
+    for (let seed of _seeds) {
        seed.location = maps.reduce((acc, curr) => {
         return calculateMapValue(acc, curr)
        }, seed.id)
     }
+
+    return _seeds
 }
 
 function calculateMapValue(input, map) {
@@ -104,4 +150,5 @@ function calculateMapValue(input, map) {
     return input
 }
 
-calculateFirstStar()
+//calculateFirstStar()
+calculateSecondStar()
